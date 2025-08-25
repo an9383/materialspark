@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  	
+<mapper namespace="mes.mappers.em.equipRepairHistAdmMapper">
+
+<resultMap id="EquipRepairHistAdmVo" type="mes.domain.em.EquipRepairHistAdmVo">
+	<result property="repairNo"				column="REPAIR_NO"				/>
+	<result property="equipCd"				column="EQUIP_CD"				/>
+	<result property="equipNm"				column="EQUIP_NM"				/>
+	<result property="equipGroup"			column="EQUIP_GROUP"			/>
+	<result property="equipGroupNm"			column="EQUIP_GROUP_NM"			/>
+	<result property="repairRegDate"		column="REPAIR_REG_DATE"		/>
+	<result property="troubleDate"			column="TROUBLE_DATE"			/>
+	<result property="repairDate"			column="REPAIR_DATE"			/>
+	<result property="stopTime"				column="STOP_TIME"				/>
+	<result property="troubleCharger"		column="TROUBLE_CHARGER"		/>
+	<result property="troubleState"			column="TROUBLE_STATE"			/>
+	<result property="troubleCause"			column="TROUBLE_CAUSE"			/>
+	<result property="actPlan"				column="ACT_PLAN"				/>
+	<result property="repairDealCorpCd"		column="REPAIR_DEAL_CORP_CD"	/>
+	<result property="repairDealCorpNm"		column="REPAIR_DEAL_CORP_NM"	/>
+	<result property="repairTime"			column="REPAIR_TIME"			/>
+	<result property="repairContent"		column="REPAIR_CONTENT"			/>
+	<result property="repairMatrl"			column="REPAIR_MATRL"			/>
+	<result property="repairDesc"			column="REPAIR_DESC"			/>
+	<result property="regId"				column="REG_ID"					/>
+	<result property="regDate"				column="REG_DATE"				/>
+	<result property="updId"				column="UPD_ID"					/>
+	<result property="updDate"				column="UPD_DATE"				/>
+	
+	<!-- memsInfo_감리 때 사용울 위한 것 -->
+	<result property="idx"					column="IDX"					/>
+	<result property="x"					column="X"						/>
+	<result property="y"					column="Y"						/>
+	<result property="z"					column="Z"						/>
+</resultMap>
+
+
+	<select id="listAll" resultMap="EquipRepairHistAdmVo">
+  		<![CDATA[
+			SELECT
+				A.REPAIR_NO
+				, A.EQUIP_CD	
+				, B.EQUIP_NM
+				, B.EQUIP_GROUP
+				, (SELECT BASE_CD_NM FROM TB_SYSTEM_COMMON_CODE C WHERE C.BASE_GROUP_CD='017' AND C.BASE_CD = B.EQUIP_GROUP) EQUIP_GROUP_NM
+				, A.REPAIR_REG_DATE
+				, A.TROUBLE_DATE
+				, A.REPAIR_DATE
+				, A.STOP_TIME
+				, A.TROUBLE_CHARGER
+				, A.TROUBLE_STATE
+				, A.TROUBLE_CAUSE
+				, A.ACT_PLAN
+				, A.REPAIR_DEAL_CORP_CD
+				, ISNULL((SELECT C.DEAL_CORP_NM FROM TB_DEAL_CORP_ADM C WHERE C.DEAL_CORP_CD = A.REPAIR_DEAL_CORP_CD) , '') AS REPAIR_DEAL_CORP_NM
+				, A.REPAIR_TIME
+				, A.REPAIR_CONTENT
+				, A.REPAIR_MATRL
+				, A.REPAIR_DESC
+				, A.REG_ID
+				, A.REG_DATE
+				, A.UPD_ID
+				, A.UPD_DATE
+			FROM
+				TB_EQUIP_REPAIR_HIST_ADM A, TB_EQUIP_CODE_ADM B
+			WHERE
+				A.EQUIP_CD = B.EQUIP_CD
+			AND
+				A.REPAIR_REG_DATE >= #{repairDateFrom}
+			AND
+				REPAIR_REG_DATE <= #{repairDateTo}
+		  ]]>
+	</select>
+	
+	<select id="read" resultMap="EquipRepairHistAdmVo">
+		SELECT
+			A.REPAIR_NO
+			, A.EQUIP_CD
+			, B.EQUIP_NM	
+			, A.REPAIR_REG_DATE
+			, A.TROUBLE_DATE
+			, A.REPAIR_DATE
+			, A.STOP_TIME
+			, A.TROUBLE_CHARGER
+			, A.TROUBLE_STATE
+			, A.TROUBLE_CAUSE
+			, A.ACT_PLAN
+			, A.REPAIR_DEAL_CORP_CD
+			, ISNULL((SELECT C.DEAL_CORP_NM FROM TB_DEAL_CORP_ADM C WHERE C.DEAL_CORP_CD = A.REPAIR_DEAL_CORP_CD) , '') AS REPAIR_DEAL_CORP_NM
+			, A.REPAIR_TIME
+			, A.REPAIR_CONTENT
+			, A.REPAIR_MATRL
+			, A.REPAIR_DESC
+			, A.REG_ID
+			, A.REG_DATE
+			, A.UPD_ID
+			, A.UPD_DATE
+		FROM
+			TB_EQUIP_REPAIR_HIST_ADM A, TB_EQUIP_CODE_ADM B
+		WHERE
+			A.EQUIP_CD = B.EQUIP_CD
+		AND
+			REPAIR_NO = #{repairNo}
+	</select>
+	
+	<insert id="create">
+		INSERT INTO TB_EQUIP_REPAIR_HIST_ADM (
+			REPAIR_NO,
+			EQUIP_CD,
+			REPAIR_REG_DATE,
+			TROUBLE_DATE,
+			REPAIR_DATE,
+			STOP_TIME,
+			TROUBLE_CHARGER,
+			TROUBLE_STATE,
+			TROUBLE_CAUSE,
+			ACT_PLAN,
+			REPAIR_DEAL_CORP_CD,
+			REPAIR_TIME,
+			REPAIR_CONTENT,
+			REPAIR_MATRL,
+			REPAIR_DESC,
+			REG_ID,
+			REG_DATE			
+		) 
+		VALUES(
+			#{repairNo},
+			#{equipCd},
+			#{repairRegDate},
+			#{troubleDate},
+			#{repairDate},
+			#{stopTime},
+			#{troubleCharger},
+			#{troubleState},
+			#{troubleCause},
+			#{actPlan},
+			#{repairDealCorpCd},
+			#{repairTime},
+			#{repairContent},
+			#{repairMatrl},
+			#{repairDesc},
+			#{regId},
+			GETDATE()			
+		)				
+	</insert>
+	
+		
+	<select id="update">
+		UPDATE
+			TB_EQUIP_REPAIR_HIST_ADM		 
+		SET
+			REPAIR_NO = #{repairNo},
+			EQUIP_CD = #{equipCd},
+			TROUBLE_DATE = #{troubleDate},
+			REPAIR_DATE = #{repairDate},
+			STOP_TIME = #{stopTime},
+			TROUBLE_CHARGER = #{troubleCharger},
+			TROUBLE_STATE = #{troubleState},
+			TROUBLE_CAUSE = #{troubleCause},
+			ACT_PLAN = #{actPlan},
+			REPAIR_DEAL_CORP_CD = #{repairDealCorpCd},
+			REPAIR_TIME = #{repairTime},
+			REPAIR_CONTENT = #{repairContent},
+			REPAIR_MATRL = #{repairMatrl},
+			REPAIR_DESC = #{repairDesc},			
+			UPD_ID = #{updId},
+			UPD_DATE = GETDATE()
+		WHERE
+			REPAIR_NO = #{repairNo}
+	</select>
+	
+	<select id="selectRepairNoSeq" resultType="String">
+		SELECT ISNULL(RIGHT('000' + CAST(MAX(REPAIR_NO)+1 AS NVARCHAR),4), '0001') FROM TB_EQUIP_REPAIR_HIST_ADM
+	</select>
+	
+	 <select id="repairRegDateCreate" resultType="String">
+    	select ISNULL(RIGHT('000' + CAST(MAX(SUBSTRING(REPAIR_NO,10,12))+1 AS NVARCHAR),3), '001') from TB_EQUIP_REPAIR_HIST_ADM WHERE LEFT(REPAIR_NO,8) = #{time}
+	 </select>
+	 
+	 
+	<!-- memsInfo_조회 -->
+ 	<select id="memsInfoList" resultMap="EquipRepairHistAdmVo">
+		SELECT
+			IDX
+			, X
+			, Y
+			, Z
+			, EQUIP_NM
+			, REG_ID
+			, REG_DATE
+		FROM TB_MEMS_INFO
+		WHERE 1=1
+		AND CONVERT(CHAR(8), REG_DATE, 112) = #{repairDateTo}
+	</select>
+	
+	
+</mapper>
